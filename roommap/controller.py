@@ -4,8 +4,7 @@ import sys
 from gopigo import *
 
 
-class Controller:
-
+#class Controller:
 
 
 
