@@ -26,16 +26,17 @@ DPR = 360.0 / 64
 WHEEL_RAD = 3.25  # Wheels are ~6.5 cm diameter.
 CHASS_WID = 13.5  # Chassis is ~13.5 cm wide.
 
-en_debug=1
+en_debug = 1
+
 
 class Controller(object):
-    '''
+    """
     Die Controller Klasse ist für die eigentliche Kontrolle
     des Programmes zuständig.
 
     Sie lädt alle wichtigen Klassen und Funktionen und
     ist für die Routine zuständig.
-    '''
+    """
 
     def __init__(self):
         print "init Controller()"
@@ -66,8 +67,9 @@ class Controller(object):
     def stop(self):
         self.go = False
 
+    # noinspection PyMethodMayBeStatic
     def move(self, min_dist):
-        ## Set servo to point straight ahead
+        # Set servo to point straight ahead
         servo(90)
         print "Moving Forward"
         while us_dist(15) > min_dist:
@@ -77,57 +79,62 @@ class Controller(object):
         print "Found obstacle"
         return
 
-    def left_deg(self, deg=None):
-        '''
+    @staticmethod
+    def left_deg(deg=None):
+        """
         Turn chassis left by a specified number of degrees.
         DPR is the #deg/pulse (Deg:Pulse ratio)
         This function sets the encoder to the correct number
          of pulses and then invokes left().
-        '''
+        """
         if deg is not None:
             pulse = int(deg / DPR)
             enc_tgt(0, 1, pulse)
         left()
 
-    def right_deg(self, deg=None):
-        '''
+    @staticmethod
+    def right_deg(deg=None):
+        """
         Turn chassis right by a specified number of degrees.
         DPR is the #deg/pulse (Deg:Pulse ratio)
         This function sets the encoder to the correct number
          of pulses and then invokes right().
-        '''
+        """
         if deg is not None:
             pulse = int(deg / DPR)
             enc_tgt(0, 1, pulse)
         right()
 
-    def fwd_cm(self, dist=None):
-        '''
+    @staticmethod
+    def fwd_cm(dist=None):
+        """
         Move chassis fwd by a specified number of cm.
         This function sets the encoder to the correct number
          of pulses and then invokes fwd().
-        '''
+        """
         if dist is not None:
             pulse = int(cm2pulse(dist))
             enc_tgt(1, 1, pulse)
         fwd()
 
-    def bwd_cm(self, dist=None):
-        '''
+    @staticmethod
+    def bwd_cm(dist=None):
+        """
         Move chassis bwd by a specified number of cm.
         This function sets the encoder to the correct number
          of pulses and then invokes bwd().
-        '''
+        """
         if dist is not None:
             pulse = int(cm2pulse(dist))
             enc_tgt(1, 1, pulse)
         bwd()
 
-    def cm2pulse(self, dist):
-        '''
+    @staticmethod
+    def cm2pulse(dist):
+        """
         Calculate the number of pulses to move the chassis dist cm.
         pulses = dist * [pulses/revolution]/[dist/revolution]
-        '''
+        """
         wheel_circ = 2 * math.pi * WHEEL_RAD  # [cm/rev] cm traveled per revolution of wheel
         revs = dist / wheel_circ
         PPR = 18  # [p/rev] encoder Pulses Per wheel Revolution
