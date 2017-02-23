@@ -67,7 +67,7 @@ def right_deg(deg=None):
     """
     if deg is not None:
         pulse = int(deg / DPR)
-        enc_tgt(0, 1, pulse)
+        enc_tgt(1, 0, pulse)
     right()
 
 

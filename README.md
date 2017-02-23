@@ -74,3 +74,12 @@ ultraschall-sensor befehl:  `us_dist(<pin>) `
 ```python
 us_dist(15)
 ```
+
+# Programmablauf
+
+1. Distanz messen
+1. wenn `dist > 30cm` gehe zu Schritt 3., wenn `dist < 30cm` sind, gehe zu Schritt 5
+1. Fahre 20cm vorwärts
+1. Gehe zu Schritt 1
+1. Messe Distanz links 70 grad und rechts 110 grad
+1. je nachdem, wo dist. größer ist, drehen wir uns um 20 grad hin und gehen zu schritt 1
