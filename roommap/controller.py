@@ -28,6 +28,7 @@ DPR = 360.0 / 64
 WHEEL_RAD = 3.25  # Wheels are ~6.5 cm diameter.
 CHASS_WID = 13.5  # Chassis is ~13.5 cm wide.
 
+
 SAMPLES = 4  # Number of sample readings to take for each reading.
 DELAY = .02
 INF = 200
@@ -187,6 +188,7 @@ class Controller(object):
         ## reduzierte geschwindigkeit, damit die raeder nicht durch drehen
         set_speed(80)
 
+
     def run(self):
         print "run Controller()"
 
@@ -247,3 +249,27 @@ class Controller(object):
         stop()
         print "Found obstacle"
         return
+
+
+    def move_and_return_distance(self, min_dist):
+
+        servo(90)
+        startTickL = enc_read(0)
+        startTickR = enc_read(1)
+        print("start: {},{}".format(startTickL, startTickR))
+        self.move(min_dist)
+        endTickL = enc_read(0)
+        endTickR = enc_read(1)
+        print("end: {},{}".format(endTickL, endTickR))
+
+        #Entfernung Berechnen
+        tickCountL = endTickL - startTickL
+        tickCountR = endTickR - startTickR
+        print("count: {},{}".format(tickCountL, tickCountR))
+        averageTick = (tickCountL + tickCountR) / 2
+        print("average Ticks: {}".format(averageTick))
+
+        # in cm
+        dist = WHEEL_CIRC * averageTick / 18
+        print("Distance in cm: {}".format(dist))
+        return dist
