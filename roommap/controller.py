@@ -270,7 +270,7 @@ class Controller(object):
             distL = currentL - startL
             distR = currentR - startR
 
-            if (currentL - lastMeasureL) > 10:
+            if (currentL - lastMeasureL) > 20:
                 if distL == distR:
                     print("moved {} ticks".format(distL))
                 elif distL > distR:
