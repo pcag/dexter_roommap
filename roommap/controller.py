@@ -274,10 +274,10 @@ class Controller(object):
                 if distL == distR:
                     print("moved {} ticks".format(distL))
                 elif distL > distR:
-                    self.rightSpeed += 3
+                    self.rightSpeed += 1
                     print("set right speed to {}".format(self.rightSpeed))
                 elif distL < distR:
-                    self.rightSpeed -= 3
+                    self.rightSpeed -= 1
                     print("set right speed to {}".format(self.rightSpeed))
                 set_right_speed(self.rightSpeed)
                 lastMeasureL = distL
