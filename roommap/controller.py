@@ -186,11 +186,17 @@ class Controller(object):
         self.goCounter = 0
         self.go = True
         ## reduzierte geschwindigkeit, damit die raeder nicht durch drehen
-        set_speed(80)
+        self.defaultSpeed = 80
+        self.leftSpeed = self.defaultSpeed
+        self.rightSpeed = self.defaultSpeed
+        set_speed(self.defaultSpeed)
 
 
     def run(self):
         print "run Controller()"
+
+        # gefahrene Entfernung in CM
+        dist = 0
 
         while self.go:
             # print "iteration %d" % self.goCounter
@@ -200,6 +206,8 @@ class Controller(object):
 
             # check distance
             scan_results = scan_room()
+
+            # TODO: eintragen in Karte...
 
             # wenn geradeaus (80, 90, 100 Grad) gemessene dist < 30cm
             # dann drehe X
@@ -222,8 +230,10 @@ class Controller(object):
                     right_deg(25)
                 elif obstacle_right(scan_results):
                     left_deg(25)
-                fwd(20)
-            
+                # fwd(20)
+                dist = self.move_and_return_distance(STOP_DISTANCE)
+
+            # TODO: Eintragen in karte...
 
             # safety check %
             # stop after max-counter is reached
@@ -242,8 +252,36 @@ class Controller(object):
     def move(self, min_dist):
         # Set servo to point straight ahead
         servo(90)
+
+        startL = enc_read(0)
+        startR = enc_read(1)
+        currentL = startL
+        currentR = startR
+        distL = currentL - startL
+        distR = currentR - startR
+        lastMeasureL = currentL
+
         print "Moving Forward"
         while us_dist(15) > min_dist:
+
+            # read current ticks
+            currentL = enc_read(0)
+            currentR = enc_read(1)
+            distL = currentL - startL
+            distR = currentR - startR
+
+            if (currentL - lastMeasureL) > 10:
+                if distL == distR:
+                    print("moved {} ticks".format(distL))
+                elif distL > distR:
+                    self.rightSpeed += 3
+                    print("set right speed to {}".format(self.rightSpeed))
+                elif distL < distR:
+                    self.rightSpeed -= 3
+                    print("set right speed to {}".format(self.rightSpeed))
+                set_right_speed(self.rightSpeed)
+                lastMeasureL = distL
+
             fwd()
             time.sleep(.02)
         stop()
