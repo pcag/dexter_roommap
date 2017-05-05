@@ -13,13 +13,13 @@ import random
 FAILSAFE_STOP = 20
 
 # Entfernung in cm wenn der GoPiGo anhalten soll
-STOP_DISTANCE = 30
+STOP_DISTANCE = 30.
 
 # Zeit, die zwischen den Iterationen liegen soll (in sekunden)
 SLEEP_TIME = .200
 
 # Entfernung in CM, welche als "unendlich" gelten
-INFINITY = 200
+INFINITY = 200.
 
 # 360 rotation is ~64 encoder pulses or 5 deg/pulse
 # DPR is the Deg:Pulse Ratio or the # of degrees per
@@ -170,6 +170,14 @@ def obstacle_left(distances):
         return False
 
 
+class Standort(object):
+
+    def __init__(self):
+        self.x = 0.0
+        self.y = 0.0
+        self.deg = 0
+
+
 class Controller(object):
     """
     Die Controller Klasse ist für die eigentliche Kontrolle
@@ -190,13 +198,37 @@ class Controller(object):
         self.leftSpeed = self.defaultSpeed
         self.rightSpeed = self.defaultSpeed
         set_speed(self.defaultSpeed)
+        # X- und Y-Position, Grad
+        pos = Standort()
+        pos.x = 0.0
+        pos.y = 0.0
+        pos.deg = 0
+        self.standort = pos
+        self.hindernis = []
 
+    def turn(self, deg):
+        # Drehen
+        if deg > 0:
+            left_deg(deg)
+        elif deg == 0:
+            return
+        else:
+            right_deg(-deg)
+
+        # Speichern der neuen Orientierung
+        self.standort.deg += deg
+
+        # normalisieren auf die Gradwerte 0-359
+        if self.standort.deg < 0:
+            self.standort.deg += 360
+        elif self.standort.deg >= 360:
+            self.standort.deg -= 360
 
     def run(self):
         print "run Controller()"
 
         # gefahrene Entfernung in CM
-        dist = 0
+        dist = 0.0
 
         while self.go:
             # print "iteration %d" % self.goCounter
@@ -208,32 +240,37 @@ class Controller(object):
             scan_results = scan_room()
 
             # TODO: eintragen in Karte...
+            #[(1, 172.75), (10, 150.25), (20, 200.0), (30, 141.0), (40, 200.0), (50, 200.0), (60, 200.0), (70, 200.0), (80, 200.0), (90, 200.0), (100, 126.25), (110, 126.5), (120, 50.0), (130, 48.75), (140, 49.75), (150, 54.5), (160, 55.25), (170, 163.75), (179, 200.0)]
+
+            self.store_scan_results(scan_results)
 
             # wenn geradeaus (80, 90, 100 Grad) gemessene dist < 30cm
             # dann drehe X
             if obstacle_in_front(scan_results):
                 if obstacle_left(scan_results) and not obstacle_right(scan_results):
-                    right_deg(70)
+                    self.turn(-70)
                 elif not obstacle_left(scan_results) and obstacle_right(scan_results):
-                    left_deg(70)
+                    self.turn(70)
                 elif obstacle_left(scan_results) and obstacle_right(scan_results):
-                    left_deg(180)
+                    self.turn(180)
                 else:
                     # zufaellig links oder rechts
                     if random.randint(0, 1):
-                        left_deg(70)
+                        self.turn(70)
                     else:
-                        right_deg(70)
+                        self.turn(-70)
             else:
                 # ansonsten fahr X geradeaus
                 if obstacle_left(scan_results):
-                    right_deg(25)
+                    self.turn(-25)
                 elif obstacle_right(scan_results):
-                    left_deg(25)
+                    self.turn(25)
                 # fwd(20)
                 dist = self.move_and_return_distance(STOP_DISTANCE)
 
-            # TODO: Eintragen in karte...
+            # Berechnen der neuen Position
+            self.standort.x = math.cos(self.standort.deg) * dist + self.standort.x
+            self.standort.y = math.sin(self.standort.deg) * dist + self.standort.y
 
             # safety check %
             # stop after max-counter is reached
@@ -256,9 +293,6 @@ class Controller(object):
         startL = enc_read(0)
         startR = enc_read(1)
         currentL = startL
-        currentR = startR
-        distL = currentL - startL
-        distR = currentR - startR
         lastMeasureL = currentL
 
         print "Moving Forward"
@@ -311,3 +345,18 @@ class Controller(object):
         dist = WHEEL_CIRC * averageTick / 18
         print("Distance in cm: {}".format(dist))
         return dist
+
+    def store_scan_results(self, scan_results):
+
+        if len(scan_results) == 0:
+            return
+
+        deg,dist = scan_results.pop(0)
+        #(1, 172.75)
+        # if dist <= 200:
+            # self.hindernis.append()
+
+            # TODO: berechnen der koordinaten des hindernisses
+
+
+        self.store_scan_results(scan_results)
