@@ -28,7 +28,6 @@ DPR = 360.0 / 64
 WHEEL_RAD = 3.25  # Wheels are ~6.5 cm diameter.
 CHASS_WID = 13.5  # Chassis is ~13.5 cm wide.
 
-
 SAMPLES = 4  # Number of sample readings to take for each reading.
 DELAY = .02
 INF = 200
@@ -103,7 +102,7 @@ def bwd_cm(dist=None):
 
 
 def scan_room():
-    '''
+    """
     Start at 0 and move to 180 in increments.
     Angle required to fit chass @20cm away is:
         degrees(atan(CHASS_WID/20))
@@ -116,22 +115,22 @@ def scan_room():
      measure.
 
     Return list of (angle,dist).
-    '''
+    """
     ret = []
-    #inc = int(math.degrees(math.atan(CHASS_WID / 20)))
+    # inc = int(math.degrees(math.atan(CHASS_WID / 20)))
     inc = 10
     print "Scanning room in {} degree increments".format(inc)
     for ang in range(0, 181, inc):
         print "  Setting angle to {} ... ".format(ang),
-        ## resetting ang because I've seen issues with 0 and 180
+        # resetting ang because I've seen issues with 0 and 180
         if ang == 0: ang = 1
         if ang == 180: ang = 179
         servo(ang)
         buf = []
-        for i in range(SAMPLES):
+        for i2 in range(SAMPLES):
             dist = us_dist(15)
             print dist,
-            if dist < INF and dist >= 0:
+            if INF > dist >= 0:
                 buf.append(dist)
             else:
                 buf.append(INF)
@@ -139,12 +138,12 @@ def scan_room():
         ave = math.fsum(buf) / len(buf)
         print "  dist={}".format(ave)
         ret.append((ang, ave))
-        ## Still having issues with inconsistent readings.
-        ## e.g.
-        ##  Setting angle to   0 ...    18   19 218 49
-        ##  Setting angle to 170 ...  1000 1000  45 46
+        # Still having issues with inconsistent readings.
+        # e.g.
+        #  Setting angle to   0 ...    18   19 218 49
+        #  Setting angle to 170 ...  1000 1000  45 46
         time.sleep(DELAY)
-    ## Reset servo to face front
+    # Reset servo to face front
     servo(90)
     return ret
 
@@ -171,7 +170,6 @@ def obstacle_left(distances):
 
 
 class Standort(object):
-
     def __init__(self):
         self.x = 0.0
         self.y = 0.0
@@ -193,7 +191,7 @@ class Controller(object):
         self.goMax = FAILSAFE_STOP
         self.goCounter = 0
         self.go = True
-        ## reduzierte geschwindigkeit, damit die raeder nicht durch drehen
+        # reduzierte geschwindigkeit, damit die raeder nicht durch drehen
         self.defaultSpeed = 80
         self.leftSpeed = self.defaultSpeed
         self.rightSpeed = self.defaultSpeed
@@ -240,7 +238,9 @@ class Controller(object):
             scan_results = scan_room()
 
             # TODO: eintragen in Karte...
-            #[(1, 172.75), (10, 150.25), (20, 200.0), (30, 141.0), (40, 200.0), (50, 200.0), (60, 200.0), (70, 200.0), (80, 200.0), (90, 200.0), (100, 126.25), (110, 126.5), (120, 50.0), (130, 48.75), (140, 49.75), (150, 54.5), (160, 55.25), (170, 163.75), (179, 200.0)]
+            # [(1, 172.75), (10, 150.25), (20, 200.0), (30, 141.0), (40, 200.0), (50, 200.0), (60, 200.0), (70, 200.0),
+            # (80, 200.0), (90, 200.0), (100, 126.25), (110, 126.5), (120, 50.0), (130, 48.75), (140, 49.75),
+            # (150, 54.5), (160, 55.25), (170, 163.75), (179, 200.0)]
 
             self.store_scan_results(scan_results)
 
@@ -290,31 +290,31 @@ class Controller(object):
         # Set servo to point straight ahead
         servo(90)
 
-        startL = enc_read(0)
-        startR = enc_read(1)
-        currentL = startL
-        lastMeasureL = currentL
+        start_l = enc_read(0)
+        start_r = enc_read(1)
+        current_l = start_l
+        last_measure_l = current_l
 
         print "Moving Forward"
         while us_dist(15) > min_dist:
 
             # read current ticks
-            currentL = enc_read(0)
-            currentR = enc_read(1)
-            distL = currentL - startL
-            distR = currentR - startR
+            current_l = enc_read(0)
+            current_r = enc_read(1)
+            dist_l = current_l - start_l
+            dist_r = current_r - start_r
 
-            if (currentL - lastMeasureL) > 20:
-                if distL == distR:
-                    print("moved {} ticks".format(distL))
-                elif distL > distR:
+            if (current_l - last_measure_l) > 20:
+                if dist_l == dist_r:
+                    print("moved {} ticks".format(dist_l))
+                elif dist_l > dist_r:
                     self.rightSpeed += 1
                     print("set right speed to {}".format(self.rightSpeed))
-                elif distL < distR:
+                elif dist_l < dist_r:
                     self.rightSpeed -= 1
                     print("set right speed to {}".format(self.rightSpeed))
                 set_right_speed(self.rightSpeed)
-                lastMeasureL = distL
+                last_measure_l = dist_l
 
             fwd()
             time.sleep(.02)
@@ -322,27 +322,26 @@ class Controller(object):
         print "Found obstacle"
         return
 
-
     def move_and_return_distance(self, min_dist):
 
         servo(90)
-        startTickL = enc_read(0)
-        startTickR = enc_read(1)
-        print("start: {},{}".format(startTickL, startTickR))
+        start_tick_l = enc_read(0)
+        start_tick_r = enc_read(1)
+        print("start: {},{}".format(start_tick_l, start_tick_r))
         self.move(min_dist)
-        endTickL = enc_read(0)
-        endTickR = enc_read(1)
-        print("end: {},{}".format(endTickL, endTickR))
+        end_tick_l = enc_read(0)
+        end_tick_r = enc_read(1)
+        print("end: {},{}".format(end_tick_l, end_tick_r))
 
-        #Entfernung Berechnen
-        tickCountL = endTickL - startTickL
-        tickCountR = endTickR - startTickR
-        print("count: {},{}".format(tickCountL, tickCountR))
-        averageTick = (tickCountL + tickCountR) / 2
-        print("average Ticks: {}".format(averageTick))
+        # Entfernung Berechnen
+        tick_count_l = end_tick_l - start_tick_l
+        tick_count_r = end_tick_r - start_tick_r
+        print("count: {},{}".format(tick_count_l, tick_count_r))
+        average_tick = (tick_count_l + tick_count_r) / 2
+        print("average Ticks: {}".format(average_tick))
 
         # in cm
-        dist = WHEEL_CIRC * averageTick / 18
+        dist = WHEEL_CIRC * average_tick / 18
         print("Distance in cm: {}".format(dist))
         return dist
 
@@ -351,12 +350,10 @@ class Controller(object):
         if len(scan_results) == 0:
             return
 
-        deg,dist = scan_results.pop(0)
-        #(1, 172.75)
+        deg, dist = scan_results.pop(0)
+        # (1, 172.75)
         # if dist <= 200:
-            # self.hindernis.append()
-
-            # TODO: berechnen der koordinaten des hindernisses
-
+        #    # self.hindernis.append()
+        # TODO: berechnen der koordinaten des hindernisses
 
         self.store_scan_results(scan_results)
