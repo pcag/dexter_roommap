@@ -35,6 +35,10 @@ INF = 200
 en_debug = 1
 
 
+def degree2radiant(ang):
+    return ang * 0.017453292519
+
+
 def cm2pulse(dist):
     """
     Calculate the number of pulses to move the chassis dist cm.
@@ -202,6 +206,7 @@ class Controller(object):
         pos.y = 0.0
         pos.deg = 0
         self.standort = pos
+        self.stored_path = []
         self.hindernis = []
 
     def turn(self, deg):
@@ -221,6 +226,7 @@ class Controller(object):
             self.standort.deg += 360
         elif self.standort.deg >= 360:
             self.standort.deg -= 360
+
 
     def run(self):
         print "run Controller()"
@@ -269,8 +275,8 @@ class Controller(object):
                 dist = self.move_and_return_distance(STOP_DISTANCE)
 
             # Berechnen der neuen Position
-            self.standort.x = math.cos(self.standort.deg) * dist + self.standort.x
-            self.standort.y = math.sin(self.standort.deg) * dist + self.standort.y
+            self.standort.x = math.cos(degree2radiant(self.standort.deg)) * dist + self.standort.x
+            self.standort.y = math.sin(degree2radiant(self.standort.deg)) * dist + self.standort.y
 
             # safety check %
             # stop after max-counter is reached
@@ -280,10 +286,16 @@ class Controller(object):
 
             # wait a little bit
             time.sleep(SLEEP_TIME)  # in seconds
+
+        # plot coordinates
+        # TODO:
+
         pass
+
 
     def stop(self):
         self.go = False
+
 
     # noinspection PyMethodMayBeStatic
     def move(self, min_dist):
@@ -322,6 +334,7 @@ class Controller(object):
         print "Found obstacle"
         return
 
+
     def move_and_return_distance(self, min_dist):
 
         servo(90)
@@ -345,15 +358,25 @@ class Controller(object):
         print("Distance in cm: {}".format(dist))
         return dist
 
+
     def store_scan_results(self, scan_results):
 
         if len(scan_results) == 0:
+            # store current position
+            self.stored_path.append([self.standort.x, self.standort.y])
             return
 
-        deg, dist = scan_results.pop(0)
-        # (1, 172.75)
-        # if dist <= 200:
-        #    # self.hindernis.append()
-        # TODO: berechnen der koordinaten des hindernisses
+        ang, dist = scan_results.pop(0)
+        
+        if dist <= 200:
+            orientation = ang + (self.standort.deg - 90)
+            # formula:
+            # d2r = (a * 0,017453292519) (degree to radiant)
+            # x = startx + (dist * cos(d2r(ang))) => 4
+            # y = starty + (dist * sin(d2r(ang))) => 2
+            x = self.standort.x + (dist * math.cos(degree2radiant(orientation))
+            y = sefl.standort.y + (dist * math.sin(degree2radiant(orientation))
+            print("Hinderniss: {},{}".format(x,y))
+            self.hindernis.append([x,y])
 
         self.store_scan_results(scan_results)
