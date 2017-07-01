@@ -374,8 +374,8 @@ class Controller(object):
             # d2r = (a * 0,017453292519) (degree to radiant)
             # x = startx + (dist * cos(d2r(ang))) => 4
             # y = starty + (dist * sin(d2r(ang))) => 2
-            x = self.standort.x + (dist * math.cos(degree2radiant(orientation))
-            y = sefl.standort.y + (dist * math.sin(degree2radiant(orientation))
+            x = self.standort.x + (dist * math.cos(degree2radiant(orientation)))
+            y = self.standort.y + (dist * math.sin(degree2radiant(orientation)))
             print("Hinderniss: {},{}".format(x,y))
             self.hindernis.append([x,y])
 
