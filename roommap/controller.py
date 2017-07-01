@@ -153,21 +153,26 @@ def scan_room():
 
 
 def obstacle_in_front(distances):
-    if distances[7][1] < STOP_DISTANCE or distances[8][1] < STOP_DISTANCE or distances[9][1] < STOP_DISTANCE or distances[10][1] < STOP_DISTANCE or distances[11][1] < STOP_DISTANCE:
+    if distances[7][1] < STOP_DISTANCE or distances[8][1] < STOP_DISTANCE or distances[9][1] < STOP_DISTANCE or \
+                    distances[10][1] < STOP_DISTANCE or distances[11][1] < STOP_DISTANCE:
         return True
     else:
         return False
 
 
 def obstacle_right(distances):
-    if distances[0][1] < STOP_DISTANCE or distances[1][1] < STOP_DISTANCE or distances[2][1] < STOP_DISTANCE or distances[3][1] < STOP_DISTANCE or distances[4][1] < STOP_DISTANCE or distances[5][1] < STOP_DISTANCE:
+    if distances[0][1] < STOP_DISTANCE or distances[1][1] < STOP_DISTANCE or distances[2][1] < STOP_DISTANCE or \
+                    distances[3][1] < STOP_DISTANCE or distances[4][1] < STOP_DISTANCE or distances[5][
+        1] < STOP_DISTANCE:
         return True
     else:
         return False
 
 
 def obstacle_left(distances):
-    if distances[13][1] < STOP_DISTANCE or distances[14][1] < STOP_DISTANCE or distances[15][1] < STOP_DISTANCE or distances[16][1] < STOP_DISTANCE or distances[17][1] < STOP_DISTANCE or distances[18][1] < STOP_DISTANCE:
+    if distances[13][1] < STOP_DISTANCE or distances[14][1] < STOP_DISTANCE or distances[15][1] < STOP_DISTANCE or \
+                    distances[16][1] < STOP_DISTANCE or distances[17][1] < STOP_DISTANCE or distances[18][
+        1] < STOP_DISTANCE:
         return True
     else:
         return False
@@ -226,7 +231,6 @@ class Controller(object):
             self.standort.deg += 360
         elif self.standort.deg >= 360:
             self.standort.deg -= 360
-
 
     def run(self):
         print "run Controller()"
@@ -292,10 +296,8 @@ class Controller(object):
 
         pass
 
-
     def stop(self):
         self.go = False
-
 
     # noinspection PyMethodMayBeStatic
     def move(self, min_dist):
@@ -334,7 +336,6 @@ class Controller(object):
         print "Found obstacle"
         return
 
-
     def move_and_return_distance(self, min_dist):
 
         servo(90)
@@ -358,7 +359,6 @@ class Controller(object):
         print("Distance in cm: {}".format(dist))
         return dist
 
-
     def store_scan_results(self, scan_results):
 
         if len(scan_results) == 0:
@@ -367,7 +367,7 @@ class Controller(object):
             return
 
         ang, dist = scan_results.pop(0)
-        
+
         if dist <= 200:
             orientation = ang + (self.standort.deg - 90)
             # formula:
@@ -376,7 +376,7 @@ class Controller(object):
             # y = starty + (dist * sin(d2r(ang))) => 2
             x = self.standort.x + (dist * math.cos(degree2radiant(orientation)))
             y = self.standort.y + (dist * math.sin(degree2radiant(orientation)))
-            print("Hinderniss: {},{}".format(x,y))
-            self.hindernis.append([x,y])
+            print("Hinderniss: {},{}".format(x, y))
+            self.hindernis.append([x, y])
 
         self.store_scan_results(scan_results)
