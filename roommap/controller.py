@@ -5,6 +5,7 @@ from gopigo import *
 import time
 import math
 import random
+import plotter
 
 # constants
 
@@ -247,7 +248,7 @@ class Controller(object):
             # check distance
             scan_results = scan_room()
 
-            # TODO: eintragen in Karte...
+            # TODO: testen, ob die einträge funktionieren
             # [(1, 172.75), (10, 150.25), (20, 200.0), (30, 141.0), (40, 200.0), (50, 200.0), (60, 200.0), (70, 200.0),
             # (80, 200.0), (90, 200.0), (100, 126.25), (110, 126.5), (120, 50.0), (130, 48.75), (140, 49.75),
             # (150, 54.5), (160, 55.25), (170, 163.75), (179, 200.0)]
@@ -364,6 +365,9 @@ class Controller(object):
         if len(scan_results) == 0:
             # store current position
             self.stored_path.append([self.standort.x, self.standort.y])
+
+            # TODO: draw plot
+
             return
 
         ang, dist = scan_results.pop(0)
