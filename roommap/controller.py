@@ -5,7 +5,7 @@ from gopigo import *
 import time
 import math
 import random
-import plotter
+# import plotter
 
 # constants
 
