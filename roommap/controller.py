@@ -11,7 +11,7 @@ import random
 
 # während der Programmierung, damit das Programm irgendwann
 # einfach aufhört und nicht ewig läuft
-FAILSAFE_STOP = 20
+FAILSAFE_STOP = 10
 
 # Entfernung in cm wenn der GoPiGo anhalten soll
 STOP_DISTANCE = 30.
@@ -154,26 +154,21 @@ def scan_room():
 
 
 def obstacle_in_front(distances):
-    if distances[7][1] < STOP_DISTANCE or distances[8][1] < STOP_DISTANCE or distances[9][1] < STOP_DISTANCE or \
-                    distances[10][1] < STOP_DISTANCE or distances[11][1] < STOP_DISTANCE:
+    if distances[7][1] < STOP_DISTANCE or distances[8][1] < STOP_DISTANCE or distances[9][1] < STOP_DISTANCE or distances[10][1] < STOP_DISTANCE or distances[11][1] < STOP_DISTANCE:
         return True
     else:
         return False
 
 
 def obstacle_right(distances):
-    if distances[0][1] < STOP_DISTANCE or distances[1][1] < STOP_DISTANCE or distances[2][1] < STOP_DISTANCE or \
-                    distances[3][1] < STOP_DISTANCE or distances[4][1] < STOP_DISTANCE or distances[5][
-        1] < STOP_DISTANCE:
+    if distances[0][1] < STOP_DISTANCE or distances[1][1] < STOP_DISTANCE or distances[2][1] < STOP_DISTANCE or distances[3][1] < STOP_DISTANCE or distances[4][1] < STOP_DISTANCE or distances[5][1] < STOP_DISTANCE:
         return True
     else:
         return False
 
 
 def obstacle_left(distances):
-    if distances[13][1] < STOP_DISTANCE or distances[14][1] < STOP_DISTANCE or distances[15][1] < STOP_DISTANCE or \
-                    distances[16][1] < STOP_DISTANCE or distances[17][1] < STOP_DISTANCE or distances[18][
-        1] < STOP_DISTANCE:
+    if distances[13][1] < STOP_DISTANCE or distances[14][1] < STOP_DISTANCE or distances[15][1] < STOP_DISTANCE or distances[16][1] < STOP_DISTANCE or distances[17][1] < STOP_DISTANCE:
         return True
     else:
         return False
@@ -257,6 +252,7 @@ class Controller(object):
 
             # wenn geradeaus (80, 90, 100 Grad) gemessene dist < 30cm
             # dann drehe X
+            print scan_results
             if obstacle_in_front(scan_results):
                 if obstacle_left(scan_results) and not obstacle_right(scan_results):
                     self.turn(-70)
