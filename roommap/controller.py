@@ -11,7 +11,7 @@ import random
 
 # während der Programmierung, damit das Programm irgendwann
 # einfach aufhört und nicht ewig läuft
-FAILSAFE_STOP = 10
+FAILSAFE_STOP = 5
 
 # Entfernung in cm wenn der GoPiGo anhalten soll
 STOP_DISTANCE = 30.
@@ -290,6 +290,19 @@ class Controller(object):
 
         # plot coordinates
         # TODO:
+        print "\n"
+        print "##############"
+        print "# Ergebnisse #"
+        print "##############"
+        print "\n"
+        print "Hindernisse: "
+        print self.hindernis
+        print "\nStored Path: "
+        print self.stored_path
+        print "\nStandort: "
+        print self.standort
+        print "\n"
+        print "##############"
 
         pass
 
