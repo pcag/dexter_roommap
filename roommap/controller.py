@@ -299,8 +299,10 @@ class Controller(object):
         print self.hindernis
         print "\nStored Path: "
         print self.stored_path
-        print "\nStandort: "
-        print self.standort
+        print "\nStandort X: "
+        print self.standort.x
+        print "Standort Y: "
+        print self.standort.y
         print "\n"
         print "##############"
 
