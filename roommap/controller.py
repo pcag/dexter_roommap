@@ -358,7 +358,9 @@ class Controller(object):
 
     def store_scan_results(self, scan_results):
 
-        if len(scan_results) == 0:
+        scan_results_copy = scan_results
+
+        if len(scan_results_copy) == 0:
             # store current position
             self.stored_path.append([self.standort.x, self.standort.y])
 
@@ -366,7 +368,7 @@ class Controller(object):
 
             return
 
-        ang, dist = scan_results.pop(0)
+        ang, dist = scan_results_copy.pop(0)
 
         if dist <= 200:
             orientation = ang + (self.standort.deg - 90)
@@ -379,4 +381,4 @@ class Controller(object):
             print("Hinderniss: {},{}".format(x, y))
             self.hindernis.append([x, y])
 
-        self.store_scan_results(scan_results)
+        self.store_scan_results(scan_results_copy)
