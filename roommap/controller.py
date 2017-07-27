@@ -358,7 +358,8 @@ class Controller(object):
 
     def store_scan_results(self, scan_results):
 
-        scan_results_copy = scan_results
+        scan_results_copy = [res[:] for res in scan_results]
+        # y = [row[:] for row in x]
 
         if len(scan_results_copy) == 0:
             # store current position
