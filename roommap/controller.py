@@ -211,6 +211,7 @@ class Controller(object):
         self.hindernis = []
 
     def turn(self, deg):
+        print "turn: {}".format(deg)
         # Drehen
         if deg > 0:
             left_deg(deg)
@@ -303,7 +304,8 @@ class Controller(object):
         print self.standort.x
         print "Standort Y: "
         print self.standort.y
-        print "\n"
+        print "Ausrichtung:"
+        print self.standort.deg
         print "##############"
 
         pass
